@@ -130,4 +130,6 @@ conțin fișiere generate și nu ne ajută să le versionăm.
 
 ## Resurse
 
+- [cpr](https://github.com/libcpr/cpr) (MIT)
+- [json](https://github.com/nlohmann/json) (MIT)
 - adăugați trimiteri către resursele externe care v-au ajutat sau pe care le-ați folosit
