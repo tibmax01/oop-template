@@ -28,6 +28,7 @@ env:
   BUILD_DIR: "build"
   EXT_DIR: "ext"
   GEN_DIR: "generated"
+  CPR_VERSION: "1.11.0"
 
 defaults:
   run:
