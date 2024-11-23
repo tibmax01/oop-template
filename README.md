@@ -137,5 +137,5 @@ despre cum funcționează, cititi [README_Teste](./tests/README_Tests.md).
 ## Resurse
 - Boost-ext/ut:
   - Link documentație: https://github.com/boost-ext/ut
-  - Link versiune/tag folosit: https://github.com/boost-ext/ut/releases/tag/v1.1.9 ( v1.1.9  -> următoarele versiuni nu puteau fi folosite cu Clang)
+  - Link versiune/tag folosit: https://github.com/boost-ext/ut/releases/tag/v1.1.9 (v1.1.9 -> următoarele versiuni nu puteau fi folosite cu Clang)
 - adăugați trimiteri către resursele externe care v-au ajutat sau pe care le-ați folosit
