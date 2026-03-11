@@ -43,37 +43,33 @@ defaults:
 jobs:
   cppcheck:
     name: "Cppcheck"
-    # concurrency:
-    #   group: "Cppcheck"
     # renovate: depName=ubuntu
     runs-on: ubuntu-22.04
-    timeout-minutes: 5
+    timeout-minutes: 10
     env:
-      # check https://github.com/danmar/cppcheck/releases for latest version
-      # NOTE: consider updating this value in scripts/build_cppcheck.sh:4 when changing this value
       # renovate: datasource=github-tags depName=danmar/cppcheck versioning=loose
-      CPPCHECK_VER: "2.18.3"
+      CPPCHECK_VER: "2.19.1"
     steps:
       - name: Checkout repo
         # renovate: datasource=github-tags depName=actions/checkout versioning=loose
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.2
 
       - name: Run cppcheck
         uses: ./.github/actions/cppcheck
 
   clang-tidy:
     name: "Clang-Tidy"
-    # concurrency:
-    #   group: "Clang-Tidy"
     # renovate: depName=ubuntu
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
+      CC: clang-18
+      CXX: clang++-18
       CLANG_VER: 18
     steps:
       - name: Checkout repo
         # renovate: datasource=github-tags depName=actions/checkout versioning=loose
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.2
 
       - name: Run clang-tidy
         uses: ./.github/actions/clang-tidy
@@ -81,10 +77,8 @@ jobs:
 
   build:
     name: ${{ matrix.name }}
-    # concurrency:
-    #   group: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 8
+    timeout-minutes: 10
     permissions:
       attestations: write
       contents: write
@@ -110,17 +104,12 @@ jobs:
       matrix:
         include:
             # renovate: depName=ubuntu
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             c: clang-18
             cxx: clang++-18
-            clang_ver: "18"
-            clang_ver_full: "18.1.8"
             # renovate: depName=ubuntu
-            name: "MSan: Ubuntu 22.04 Clang 18"
-            cmake_flags: "-DUSE_MSAN=ON"
+            name: "Ubuntu 24.04 Clang 18"
             cmake_generator: Ninja
-            # This env runs memory sanitizers
-            runs_msan: true
 
             # renovate: depName=ubuntu
           - os: ubuntu-22.04
@@ -128,7 +117,7 @@ jobs:
             cxx: g++-12
             # renovate: depName=ubuntu
             name: "ASan: Ubuntu 22.04 GCC 12"
-            cmake_flags: "-DUSE_ASAN=ON"
+            cmake_flags: "-DUSE_ASAN=ON -DBUILD_SHARED_LIBS=OFF"
             cmake_generator: Ninja
             # This env runs address sanitizers
             runs_asan: true
@@ -141,7 +130,7 @@ jobs:
             cxx: g++-12
             # renovate: depName=ubuntu
             name: "Valgrind: Ubuntu 22.04 GCC 12"
-            # cmake_flags:
+            cmake_flags: "-DBUILD_SHARED_LIBS=OFF"
             cmake_generator: Ninja
             # This env runs valgrind
             runs_valgrind: true
@@ -152,9 +141,9 @@ jobs:
             cxx: clang++
             # renovate: depName=macos
             name: "macOS 14 Apple Clang 15"
-            cmake_flags: "-DUSE_ASAN=OFF"
-            # cmake_generator:
-            # This env runs address sanitizers
+            cmake_flags: "-DUSE_ASAN=OFF -DBUILD_SHARED_LIBS=ON"
+            cmake_generator: Ninja
+            # This env does not currently run address sanitizers
             runs_asan: false
 
             # renovate: depName=macos
@@ -163,8 +152,8 @@ jobs:
             cxx: g++-13
             # renovate: depName=macos
             name: "macOS 14 GCC 13"
-            # cmake_flags:
-            # cmake_generator: Ninja
+            cmake_flags: "-DBUILD_SHARED_LIBS=OFF"
+            cmake_generator: Ninja
 
             # renovate: depName=windows
           - os: windows-2022
@@ -172,7 +161,7 @@ jobs:
             cxx: cl
             # renovate: depName=windows
             name: "ASan: Windows 2022 MSVC 19.44"
-            cmake_flags: "-DUSE_ASAN=ON"
+            cmake_flags: "-DUSE_ASAN=ON -DBUILD_SHARED_LIBS=OFF"
             # Ninja is not faster on MSVC because... MSVC
             # cmake_generator: "Ninja"
             # cmake_generator: "Ninja Multi-Config"
@@ -185,13 +174,13 @@ jobs:
             cxx: g++
             # renovate: depName=windows
             name: "Windows 2022 MinGW GCC 13"
-            # cmake_flags:
+            cmake_flags: "-DBUILD_SHARED_LIBS=ON"
             cmake_generator: Ninja
 
     steps:
       - name: Checkout repo
         # renovate: datasource=github-tags depName=actions/checkout versioning=loose
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.2
 
       - name: Set timestamp, zip name, repo visibility
         env:
@@ -241,7 +230,7 @@ jobs:
 
       - name: Upload Artifacts
         # renovate: datasource=github-tags depName=actions/upload-artifact versioning=loose
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: ${{ env.ZIP_NAME }}_${{ env.TIMESTAMP }}
           include-hidden-files: true
